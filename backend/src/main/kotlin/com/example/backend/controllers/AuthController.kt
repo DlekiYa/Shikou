@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.ErrorResponse
 import org.springframework.web.ErrorResponseException
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/auth")
@@ -27,11 +28,16 @@ class AuthController(
     private val encoder: PasswordEncoder,
     private val jwtUtil: JwtUtil
 ) {
+    private fun getToken(username: String): String {
+        val userDetails = userService.loadUserByUsername(username)
+        val token = jwtUtil.generateToken(userDetails.username)
+        return token
+    }
     @PostMapping("/signup")
-    fun registerUser(@RequestBody @Valid request: AuthRequest): ResponseEntity<UserAccount> {
+    fun registerUser(@RequestBody @Valid request: AuthRequest): ResponseEntity<AuthResponse> {
         val user = userRepository.findByUsername(request.username)
         if (user != null) {
-            return ResponseEntity.badRequest().build()
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "User already created")
         }
         val authorities: MutableList<String> = mutableListOf("ROLE_USER")
         if (SecurityContextHolder.getContext().getAuthentication()?.authorities?.firstOrNull { it.authority == "ROLE_ADMIN" } != null &&
@@ -40,8 +46,8 @@ class AuthController(
         }
 
         val savedUser = UserAccount(username = request.username, password = encoder.encode(request.password), authorities = authorities)
-        val ret = userRepository.save(savedUser)
-        return ResponseEntity(ret, HttpStatus.CREATED)
+        userRepository.save(savedUser)
+        return ResponseEntity.ok(AuthResponse(getToken(savedUser.username)))
     }
 
     @PostMapping("/signin")
@@ -51,17 +57,12 @@ class AuthController(
                 UsernamePasswordAuthenticationToken(request.username, request.password)
             )
         } catch (ex: BadCredentialsException) {
-            throw InvalidCredentialsException()
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bad credentials", ex)
         }
 
-        val userDetails = userService.loadUserByUsername(request.username)
-        val token = jwtUtil.generateToken(userDetails.username)
-        return ResponseEntity.ok(AuthResponse(token = token))
+        return ResponseEntity.ok(AuthResponse(token = getToken(request.username)))
     }
 }
-
-@ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="Invalid credentials")
-class InvalidCredentialsException : RuntimeException() {}
 
 data class AuthRequest(
     @field:NotBlank
