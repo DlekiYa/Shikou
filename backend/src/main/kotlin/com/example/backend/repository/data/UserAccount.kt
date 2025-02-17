@@ -1,4 +1,4 @@
-package com.example.backend.repository
+package com.example.backend.repository.data
 
 import jakarta.persistence.*
 
@@ -7,7 +7,12 @@ data class UserAccount(
     @Column(unique = true)
     val username: String,
     val password: String,
-    val bio: String
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    val authorities: List<String>
+
+    //@ManyToMany
+    //val workspaces: List<Workspace>
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
