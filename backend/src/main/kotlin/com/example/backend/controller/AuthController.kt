@@ -1,4 +1,4 @@
-package com.example.backend.controllers
+package com.example.backend.controller
 
 import com.example.backend.repository.UserRepository
 import com.example.backend.repository.data.UserAccount
@@ -7,15 +7,12 @@ import com.example.backend.security.JwtUtil
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.web.ErrorResponse
-import org.springframework.web.ErrorResponseException
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 

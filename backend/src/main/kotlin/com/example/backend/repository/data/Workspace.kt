@@ -5,14 +5,18 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToMany
+import jakarta.persistence.OneToMany
 
 @Entity
 data class Workspace(
     val name: String,
     val description: String,
 
-    //@ManyToMany(mappedBy = "workspaces")
-    //val users: List<UserAccount>
+    @OneToMany
+    val documents: List<Document> = emptyList(),
+
+    @OneToMany
+    val users: List<WorkspaceUser> = emptyList()
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
