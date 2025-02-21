@@ -37,6 +37,6 @@ class AuthService(
         val auth = authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(username, passwordRaw)
         )
-        return auth.name
+        return getToken(auth.name)
     }
 }

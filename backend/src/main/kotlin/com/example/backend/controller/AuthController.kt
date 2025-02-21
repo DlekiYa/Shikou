@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
@@ -18,13 +19,13 @@ class AuthController(
 
     @PostMapping("/signup")
     fun registerUser(@RequestBody @Valid request: AuthRequest): ResponseEntity<AuthResponse> {
-//        val authorities: MutableList<String> = mutableListOf("ROLE_USER")
-//        if (SecurityContextHolder.getContext().getAuthentication()?.authorities?.firstOrNull { it.authority == "ROLE_ADMIN" } != null &&
-//            request.authorities != null) {
-//            authorities.addAll(request.authorities)
-//        }
+        val authorities: MutableList<String> = mutableListOf("ROLE_USER")
+        if (SecurityContextHolder.getContext().getAuthentication()?.authorities?.firstOrNull { it.authority == "ROLE_ADMIN" } != null &&
+            request.authorities != null) {
+            authorities.addAll(request.authorities)
+        }
 
-        authService.createUser(request.username, request.password, emptyList())
+        authService.createUser(request.username, request.password, authorities)
         return ResponseEntity.ok(AuthResponse(authService.getTokenFromExistingUser(request.username, request.password)))
     }
 
