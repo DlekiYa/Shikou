@@ -24,9 +24,13 @@ class AuthService(
         return token
     }
 
-    fun createUser(username: String, passwordRaw: String, authorities: List<String>) {
-        userRepository.findByUsername(username) ?: throw UserAlreadyCreatedException()
-        UserAccount(username, encoder.encode(passwordRaw), authorities)
+    fun createUser(username: String, passwordRaw: String, authorities: List<String> = emptyList()) {
+        if (userRepository.findByUsername(username) != null) {
+            throw UserAlreadyCreatedException()
+        }
+
+        val user = UserAccount(username, encoder.encode(passwordRaw), authorities)
+        userRepository.save(user)
     }
 
     fun getTokenFromExistingUser(username: String, passwordRaw: String): String {
