@@ -9,10 +9,10 @@ data class UserAccount(
     val password: String,
 
     @ElementCollection(fetch = FetchType.EAGER)
-    val authorities: List<String>
+    val authorities: List<String> = emptyList(),
 
-    //@ManyToMany
-    //val workspaces: List<Workspace>
+    @OneToMany
+    val workspaces: List<Workspace> = emptyList()
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

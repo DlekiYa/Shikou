@@ -1,5 +1,6 @@
 package com.example.backend.security
 
+import io.jsonwebtoken.security.SignatureException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -24,8 +25,10 @@ class JwtAuthenticationFilter(
             jwtToken = authorizationHeader.substring(7)
             try {
                 username = jwtUtil.extractUsername(jwtToken)
+            } catch (ex: SignatureException) {
+                println("Error extracting username from jwt token: signature is invalid")
             } catch (ex: Exception) {
-                println("Error extracting username from jwt token")
+                println("Error extracting username from jwt token: unknown exception")
             }
         }
 
