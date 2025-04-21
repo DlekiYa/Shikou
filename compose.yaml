@@ -1,4 +1,14 @@
 services:
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    environment:
+      POSTGRES_DB: shikoudb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgresdb
+    ports:
+      - "5432:5432"
+
   backend:
     build: 
       context: ./backend
@@ -6,12 +16,17 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shikoudb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     volumes:
       - ./backend:/app
       - /app/build
     networks:
       - app-network
+    depends_on:
+      - postgres
 
   web:
     build:
