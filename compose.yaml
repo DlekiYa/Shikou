@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    volumes:
+      - ./backend:/app
+      - /app/build
+    networks:
+      - app-network
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/project
+      - /project/node_modules
+    depends_on:
+    - backend
+    networks:
+      - app-network
+
+networks: # TODO: don't forget to actually connect spring with vue, silly (for delik)
+  app-network:
+    driver: bridge
