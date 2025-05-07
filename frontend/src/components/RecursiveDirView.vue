@@ -3,10 +3,11 @@ export default {
   name: 'RecursiveDirView',
   props: {
     directory: Object,
-    pref: String
+    pref: String,
+    cumul: String
   }, methods: {
     openCreateWindow: (event) => {
-        console.log("woahhhh " + event.target)
+        console.log("woahhhh " + event)
     }
   }
 }
@@ -15,10 +16,11 @@ export default {
 </script>
 
 <template>
-    <div class="create_button" v-on:click="(event)=>{openCreateWindow(event)}">{{ directory.name }}:   +</div>
+    <div class="create_button" v-on:click="openCreateWindow(cumul)">{{ directory.name }}:   +</div>
     <div v-if="directory" v-for="item in directory.children">
         <div v-if="item.isDir">{{ pref + item.name }}:</div>
-        <RecursiveDirView @doc-selected="(kek)=>{
+        <RecursiveDirView :cumul="cumul + '/' + item.name"
+            @doc-selected="(kek)=>{
             this.$emit('doc-selected', kek)
         }" v-if="item.isDir" :pref="pref + '--'" :directory="item" class="directory">
         </RecursiveDirView>

@@ -55,11 +55,10 @@ class DocumentController(
         return document
     }
 
-    @GetMapping("/path")
+    @PostMapping("/path")
     fun getDocument(@RequestBody @Valid request: GetDocumentRequest): ResponseEntity<Document> {
         val documents = documentRepository.findDocumentsByPath(request.path)
-        val answer = documents.firstOrNull {it.id == request.workspaceId} ?: return ResponseEntity.notFound().build()
-        return ResponseEntity.ok(answer)
+        return ResponseEntity.ok(documents.first())
     }
 
     @GetMapping("/raw/{id}")

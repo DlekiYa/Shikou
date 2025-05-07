@@ -26,25 +26,21 @@ async function updateQuill(newDoc) {
     console.log(fileName.value);
     const quill = quillRef.value.getQuill();
     
-    axios({
-      method: 'get',
-      url: 'http:/localhost:8080/api/document/path',
-      'headers': {
-        "Authorization": "Bearer " + localStorage.getItem('token')
-      },
-      'data': {
+    var response = await axios.post(
+      'http://localhost:8080/api/document/path',{
         "path": fileName.value,
-        "workspaceId": Number(workspaceId.value)
-      }
-    })
-    .then(response => {
+        "workspaceId": Number(props.workspaceId)
+      },
+      { 'headers': {
+        "Authorization": "Bearer " + localStorage.getItem('token')
+      }})
+
       console.log({'data': {
         "path": fileName.value,
         "workspaceId": Number(workspaceId.value)
       }})
       //console.log(response.data);
       quill.setText(response.data);
-    })
   };
 }
 
@@ -76,7 +72,7 @@ async function openCreateWindow(event) {
 <template>
     <div class="page">
         <div class="containerBrowse">
-          <RecursiveDirView v-on:click="(event)=>{openCreateWindow(event)}" pref="--" :directory="directory" @doc-selected="updateQuill"></RecursiveDirView>
+          <RecursiveDirView pref="--" :cumul="directory.name" :directory="directory" @doc-selected="updateQuill"></RecursiveDirView>
         </div>
         <quill-editor ref="quillRef" theme="snow"></quill-editor>
     </div>
