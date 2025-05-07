@@ -39,7 +39,7 @@ class DocumentService(
         file.parentFile?.mkdirs()
         file.createNewFile()
 
-        val document = Document(workspace, fullPath.pathString)
+        val document = Document(workspace, "${path.removePrefix("/").removeSuffix("/")}/$name")
         documentRepository.save(document)
     }
 }

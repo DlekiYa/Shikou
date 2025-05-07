@@ -8,7 +8,6 @@ data class Document( //TODO: CHANGE THIS
     val workspace: Workspace,
     //val role: WorkspaceRole,
 
-    @Column(unique = true)
     val path: String
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
