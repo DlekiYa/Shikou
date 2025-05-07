@@ -9,7 +9,7 @@
         <div class="logo">シ</div>
         <div class="authbox">
             <div class="signin" @click="redirect('/signin')"> sign in</div>
-            <div class="signup"> sign up </div>
+            <div class="signup" @click="redirect('/signup')"> sign up </div>
         </div>
     </header>
 </template>
@@ -41,6 +41,7 @@
     }
 
     .signin {
+        display: flex;
         border: 5px solid #105010;
         padding-inline: 10px;
         border-radius: 10px;
@@ -51,13 +52,14 @@
     }
 
     .signup {
+        display: flex;
         border: 2px solid black;
         padding-inline: 10px;
         border-radius: 10px;
         background-color: #e0e0e0;
         color: #105010;
         justify-self: center;
-        align-items: center;
-        justify-content: center;
+        place-items: center;
+        font-weight: bold;
     }
 </style>

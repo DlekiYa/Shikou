@@ -4,10 +4,12 @@
   import Home from './components/Home.vue'
   import SigninPage from './components/SigninPage.vue';
   import NotFound from './components/NotFound.vue';
+  import SignupPage from './components/SignupPage.vue';
 
   const routes : { [key: string]: any } = {
   '/': Home,
-  '/signin': SigninPage
+  '/signin': SigninPage,
+  '/signup' : SignupPage
   }
 
   const currentPath = ref(window.location.pathname)
