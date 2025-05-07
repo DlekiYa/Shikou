@@ -28,6 +28,7 @@ data class FileEntry(
 )
 
 fun listDirectoryToJson(directoryPath: String): String {
+    println(directoryPath)
     val rootDir = File(directoryPath)
     if (!rootDir.exists() || !rootDir.isDirectory) {
         return "[]"
@@ -80,6 +81,6 @@ class WorkspaceService(
     }
 
     fun getWorkspace(workspaceId: String): String {
-        return listDirectoryToJson(workspaceId)
+        return listDirectoryToJson( "${documentConfiguration.workspaceRootDirectory.removeSuffix("/")}/" + workspaceId)
     }
 }

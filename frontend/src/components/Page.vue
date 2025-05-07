@@ -20,13 +20,31 @@ var prevDirectory = {}
 const workspaceId = ref(props.workspaceId);
 const fileName = ref('');
 
-function updateQuill(newDoc) {
+async function updateQuill(newDoc) {
   fileName.value = newDoc
   if (quillRef.value) {
     console.log(fileName.value);
     const quill = quillRef.value.getQuill();
-    quill.setText(fileName.value);
-    // TODO: read document from api here
+    
+    axios({
+      method: 'get',
+      url: 'http:/localhost:8080/api/document/path',
+      'headers': {
+        "Authorization": "Bearer " + localStorage.getItem('token')
+      },
+      'data': {
+        "path": fileName.value,
+        "workspaceId": Number(workspaceId.value)
+      }
+    })
+    .then(response => {
+      console.log({'data': {
+        "path": fileName.value,
+        "workspaceId": Number(workspaceId.value)
+      }})
+      //console.log(response.data);
+      quill.setText(response.data);
+    })
   };
 }
 
@@ -39,25 +57,8 @@ async function updateDirectory() {
         }
   )
   console.log(response.data.status)
-  /*directory.value = {'isDir': true, 'name': 'ugly', 'contents': [
-    {'isDir': true, 'name': 'fgggg', 'contents':
-     [{'isDir': false, 'name': 'gadsg.txt'}]
-    },
-    {'isDir': false, 'name': 'f2.jar'}, 
-    {'isDir': false, 'name': 'text.txt'},
-    {'isDir': true, 'name': 'haha', 'contents': [
-      {'isDir': false, 'name': 'f3.jar'},
-      {'isDir': false, 'name': 'f4.jar'},
-      {'isDir': false, 'name': 'f5.jar'},
-      {'isDir': true, 'name': 'haha2', 'contents': [
-        {'isDir': false, 'name': 'f6.jar'},
-        {'isDir': false, 'name': 'f7.jar'},
-        {'isDir': false, 'name': 'f8.jar'},
-      ]}
-    ]}
-  ]}*/
 
-  directory.value = response.data.status
+  directory.value = {'isDir': true, 'name': 'root', 'children': JSON.parse(response.data.status)}
   console.log(directory.value)
 }
 
@@ -66,13 +67,16 @@ watch(() => props.workspaceId, (newId, oldId) => {
     updateDirectory();
   }
 }, { immediate: true });
+
+async function openCreateWindow(event) {
+    console.log("woahhhh " + event.target.directory)
+}
 </script>
 
 <template>
     <div class="page">
         <div class="containerBrowse">
-          {{ directory.name }}:
-          <RecursiveDirView pref="--" :directory="directory" @doc-selected="updateQuill"></RecursiveDirView>
+          <RecursiveDirView v-on:click="(event)=>{openCreateWindow(event)}" pref="--" :directory="directory" @doc-selected="updateQuill"></RecursiveDirView>
         </div>
         <quill-editor ref="quillRef" theme="snow"></quill-editor>
     </div>

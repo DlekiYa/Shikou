@@ -73,14 +73,15 @@
             console.log(x)
         })
         
-        // Reset form and close
-        this.name = '';
-        this.closeForm();
-        
         // Optional: Show a success message
         alert(`Workspace created: ${this.name}`);
 
-        location.reload();
+        
+        // Reset form and close
+        this.name = '';
+        this.closeForm();
+
+        //location.reload();
       }
     }
   }
