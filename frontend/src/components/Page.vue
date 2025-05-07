@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, onUpdated } from 'vue';
+import { ref, defineProps, watch } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import axios from 'axios';
@@ -20,14 +20,6 @@ var prevDirectory = {}
 const workspaceId = ref(props.workspaceId);
 const fileName = ref('');
 
-onUpdated(async () => {
-    console.log(quillRef.value)
-  if (prevDirectory != directory.value) {
-    updateDirectory()
-    prevDirectory = directory.value
-  }
-})
-
 function updateQuill(newDoc) {
   fileName.value = newDoc
   if (quillRef.value) {
@@ -39,10 +31,15 @@ function updateQuill(newDoc) {
 }
 
 async function updateDirectory() {
-  //console.log('http://localhost:8080/api/document/' + props.workspaceId)
-  //var response = await axios.get('http://localhost:8080/api/document/' + props.workspaceId)
-  //console.log(response.data)
-  directory.value = {'isDir': true, 'name': 'ugly', 'contents': [
+  console.log('http://localhost:8080/api/workspace/' + props.workspaceId)
+  var response = await axios.get('http://localhost:8080/api/workspace/' + props.workspaceId,
+        {'headers': {
+            "Authorization": "Bearer " + localStorage.getItem('token')
+          }
+        }
+  )
+  console.log(response.data.status)
+  /*directory.value = {'isDir': true, 'name': 'ugly', 'contents': [
     {'isDir': true, 'name': 'fgggg', 'contents':
      [{'isDir': false, 'name': 'gadsg.txt'}]
     },
@@ -58,14 +55,17 @@ async function updateDirectory() {
         {'isDir': false, 'name': 'f8.jar'},
       ]}
     ]}
-  ]}
+  ]}*/
 
+  directory.value = response.data.status
   console.log(directory.value)
-
 }
 
-
-updateDirectory()
+watch(() => props.workspaceId, (newId, oldId) => {
+  if (newId !== oldId) {
+    updateDirectory();
+  }
+}, { immediate: true });
 </script>
 
 <template>

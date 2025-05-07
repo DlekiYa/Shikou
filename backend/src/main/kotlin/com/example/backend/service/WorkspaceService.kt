@@ -53,12 +53,14 @@ class WorkspaceService(
     private val userRepository: UserRepository,
     private val documentConfiguration: DocumentConfiguration
 ) {
-    fun createWorkspace(username: String, name: String) {
+    fun createWorkspace(name: String) : Workspace {
         val new_workspace = Workspace(name, "");
 
         val savedWorkspace = workspaceRepository.save(new_workspace);
         val workspacePath = Paths.get("${documentConfiguration.workspaceRootDirectory.removeSuffix("/")}/${savedWorkspace.id}")
         Files.createDirectory(workspacePath) // hope this works
+
+        return new_workspace
     }
 
     @Transactional

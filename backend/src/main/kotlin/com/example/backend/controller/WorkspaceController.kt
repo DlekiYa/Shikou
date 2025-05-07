@@ -20,8 +20,8 @@ class WorkspaceController(
 ) {
     @PostMapping("/create")
     fun createWorkspace(@RequestBody @Valid request: CreateWorkspaceRequest): ResponseEntity<StatusResponse> {
-        workspaceService.createWorkspace(request.username, request.name);
-        workspaceService.addWorkspaceToUser(request.username, Workspace(request.name, ""));
+        val ws : Workspace = workspaceService.createWorkspace(request.name);
+        workspaceService.addWorkspaceToUser(request.username, ws);
         return ResponseEntity.ok(StatusResponse("success"))
     }
 

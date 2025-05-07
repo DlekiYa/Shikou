@@ -22,9 +22,8 @@ onMounted(async () => {
     try {
       const response = await axios.get(
         `http://localhost:8080/api/user/${localStorage.getItem('username')}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        {'headers': {
+            "Authorization": "Bearer " + localStorage.getItem('token')
           }
         }
       );

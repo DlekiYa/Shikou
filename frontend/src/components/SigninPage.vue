@@ -69,7 +69,9 @@
     
     try {
       // Simulate API call
-      const response = axios.post('http://localhost:8080/api/auth/signin', {'username': form.value.email, 'password': form.value.password});
+      const response = axios.post('http://localhost:8080/api/auth/signin',
+       {'username': form.value.email, 'password': form.value.password}
+      );
 
       console.log(response)
       
