@@ -1,5 +1,6 @@
 package com.example.backend.service
 
+import com.example.backend.configuration.DocumentConfiguration
 import com.example.backend.repository.WorkspaceRepository
 import com.example.backend.repository.data.Workspace
 import com.example.backend.repository.UserRepository
@@ -15,6 +16,8 @@ import java.io.File
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
+import java.nio.file.Files
+import java.nio.file.Paths
 
 
 @Serializable
@@ -48,13 +51,17 @@ fun listDirectoryToJson(directoryPath: String): String {
 class WorkspaceService(
     private val workspaceRepository: WorkspaceRepository,
     private val userRepository: UserRepository,
+    private val documentConfiguration: DocumentConfiguration
 ) {
     fun createWorkspace(username: String, name: String) {
         val new_workspace = Workspace(name, "");
         var user : UserAccount? = userRepository.findByUsername(username)
         var list : MutableList<UserAccount> = if (user != null) mutableListOf(user) else mutableListOf()
         new_workspace.updateUsers(list)
-        workspaceRepository.save(new_workspace);
+
+        val savedWorkspace = workspaceRepository.save(new_workspace);
+        val workspacePath = Paths.get("${documentConfiguration.workspaceRootDirectory.removeSuffix("/")}/${savedWorkspace.id}")
+        Files.createDirectory(workspacePath) // hope this works
     }
 
     @Transactional

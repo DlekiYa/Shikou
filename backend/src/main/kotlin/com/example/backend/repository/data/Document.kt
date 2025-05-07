@@ -6,7 +6,10 @@ import jakarta.persistence.*
 data class Document( //TODO: CHANGE THIS
     @ManyToOne
     val workspace: Workspace,
-    val role: WorkspaceRole
+    //val role: WorkspaceRole,
+
+    @Column(unique = true)
+    val path: String
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
