@@ -27,8 +27,19 @@ class WorkspaceController(
         }
         
         workspaceService.createWorkspace(request.username, request.name);
-        workspaceService.addWorkspaceToUser(request.name, Workspace(request.name, ""));
+        workspaceService.addWorkspaceToUser(request.username, Workspace(request.name, ""));
         return ResponseEntity.ok(StatusResponse("success"))
+    }
+
+    @GetMapping("/{id}")
+    fun getWorkspace(@RequestBody @Valid request: GetWorkspaceRequest): ResponseEntity<StatusResponse> {
+        val authorities: MutableList<String> = mutableListOf("ROLE_USER")
+        if (SecurityContextHolder.getContext().getAuthentication()?.authorities?.firstOrNull { it.authority == "ROLE_ADMIN" } != null &&
+            request.authorities != null) {
+            authorities.addAll(request.authorities)
+        }
+        
+        return ResponseEntity.ok(StatusResponse(workspaceService.getWorkspace(request.id)))
     }
 }
 
@@ -37,6 +48,12 @@ data class CreateWorkspaceRequest(
     val username: String,
     @field:NotBlank
     val name: String,
+    val authorities: List<String>?
+)
+
+data class GetWorkspaceRequest(
+    @field:NotBlank
+    val id: String,
     val authorities: List<String>?
 )
 

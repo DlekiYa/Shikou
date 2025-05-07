@@ -1,36 +1,58 @@
-<script setup lang="ts">
-    import Header from './Header.vue';
-    import SidePanel from './SidePanel.vue';
-    import Page from './Page.vue';
-    import axios, { Axios } from 'axios';
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import Header from './Header.vue';
+import SidePanel from './SidePanel.vue';
+import Page from './Page.vue';
 
-    var token = localStorage.getItem('token');
+// Reactive references
+const token = ref(localStorage.getItem('token'));
+const needLoginFlag = ref(false);
+const workspaces = ref([]); // Reactive workspaces array
+const current_workspaceId = ref('')
 
-    console.log(token);
+console.log(token.value);
 
-    var needLoginFlag = false;
-
-    if (token == null) {
-        console.log("TOKEN IS NULL");
-        needLoginFlag = true
-    } else {
-        var response = axios.get(
-            'http://localhost:8080/api/user/' + localStorage.getItem('username'),
-            {'headers':
-             {'Authorization': `Bearer ${localStorage.getItem('token')}`}
-            }
-        )
+// Fetch workspaces when component mounts
+onMounted(async () => {
+  if (!token.value) {
+    console.log("TOKEN IS NULL");
+    needLoginFlag.value = true;
+  } else {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/user/${localStorage.getItem('username')}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      console.log(response.data.workspaces)
+      workspaces.value = response.data.workspaces; // Update reactive reference
+    } catch (error) {
+      console.error("Error fetching workspaces:", error);
+      needLoginFlag.value = true;
     }
+  }
+});
+
+// Props definition
+const handleWorkspaceChange = (workspaceData) => {
+    console.log('changed workspace to ' + workspaceData)
+    current_workspaceId.value = workspaceData
+};
+
 </script>
 
 <template>
     <div class="homepage">
         <Header></Header>
-        <SidePanel></SidePanel>
+        <SidePanel :workspaces="workspaces" @change-workspace="handleWorkspaceChange"></SidePanel>
         <div v-if="needLoginFlag" class="needlogin">
             Please login
         </div>
-        <Page v-else></Page>
+        <Page v-else :workspaceId="current_workspaceId"></Page>
     </div>
 </template>
 

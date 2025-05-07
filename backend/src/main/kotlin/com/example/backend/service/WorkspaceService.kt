@@ -11,25 +11,57 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.File
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.Serializable
+
+
+@Serializable
+data class FileEntry(
+    val isDir: Boolean,
+    val name: String,
+    val children: List<FileEntry> = emptyList()
+)
+
+fun listDirectoryToJson(directoryPath: String): String {
+    val rootDir = File(directoryPath)
+    if (!rootDir.exists() || !rootDir.isDirectory) {
+        return "[]"
+    }
+
+    fun buildDirectoryStructure(dir: File): List<FileEntry> {
+        return dir.listFiles()?.map { file ->
+            FileEntry(
+                isDir = file.isDirectory,
+                name = file.name,
+                children = if (file.isDirectory) buildDirectoryStructure(file) else emptyList()
+            )
+        }?.toList() ?: emptyList()
+    }
+
+    return Json.encodeToString(buildDirectoryStructure(rootDir))
+}
+
 
 @Service
 class WorkspaceService(
-    private val authenticationManager: AuthenticationManager,
-    private val userService: CustomUserDetailsService,
     private val workspaceRepository: WorkspaceRepository,
     private val userRepository: UserRepository,
-    private val encoder: PasswordEncoder,
-    private val jwtUtil: JwtUtil
 ) {
     fun createWorkspace(username: String, name: String) {
         val new_workspace = Workspace(name, "");
+        var user : UserAccount? = userRepository.findByUsername(username)
+        var list : MutableList<UserAccount> = if (user != null) mutableListOf(user) else mutableListOf()
+        new_workspace.updateUsers(list)
         workspaceRepository.save(new_workspace);
     }
 
     @Transactional
-    fun addWorkspaceToUser(username: String, workspace: Workspace): UserAccount {
+    fun addWorkspaceToUser(username: String, workspace: Workspace) {
+        println(username)
         val user = userRepository.findByUsername(username)
-            ?: throw IllegalArgumentException("User not found")
+            ?: return
         
         // Create a new mutable list to avoid immutability issues
         val updatedWorkspaces = user.workspaces.toMutableList().apply {
@@ -39,7 +71,9 @@ class WorkspaceService(
         // Since workspaces is a val, we need to handle this differently
         // This requires adding a method to update workspaces in UserAccount
         user.updateWorkspaces(updatedWorkspaces)
-        
-        return userRepository.save(user)
+    }
+
+    fun getWorkspace(workspaceId: String): String {
+        return listDirectoryToJson(workspaceId)
     }
 }

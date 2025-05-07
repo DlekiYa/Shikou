@@ -1,18 +1,12 @@
 package com.example.backend.repository.data
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
 
 @Entity
-data class Document(
-    val name: String,
-    val content: String,
-
+data class Document( //TODO: CHANGE THIS
     @ManyToOne
-    val workspace: Workspace
+    val workspace: Workspace,
+    val role: WorkspaceRole
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

@@ -21,7 +21,7 @@ class BackendApplication
 class CorsConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")  // Apply to all endpoints
-            .allowedOrigins("http://localhost:5173")  // Your Vue.js app origin
+            .allowedOrigins("http://localhost:3000")  // Your Vue.js app origin
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true)

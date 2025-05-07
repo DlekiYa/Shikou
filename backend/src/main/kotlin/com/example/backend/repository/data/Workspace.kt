@@ -16,8 +16,13 @@ data class Workspace(
     val documents: List<Document> = emptyList(),
 
     @OneToMany
-    val users: List<WorkspaceUser> = emptyList()
+    val users: MutableList<UserAccount> = mutableListOf()
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun updateUsers(newUsers: MutableList<UserAccount>) {
+        this.users.clear()
+        this.users.addAll(newUsers)
+    }
 }
