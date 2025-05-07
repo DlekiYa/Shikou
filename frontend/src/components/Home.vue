@@ -9,7 +9,7 @@ import Page from './Page.vue';
 const token = ref(localStorage.getItem('token'));
 const needLoginFlag = ref(false);
 const workspaces = ref([]); // Reactive workspaces array
-const current_workspaceId = ref('')
+const current_workspaceId = ref(-1)
 
 console.log(token.value);
 

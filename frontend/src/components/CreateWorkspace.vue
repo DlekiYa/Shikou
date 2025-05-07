@@ -35,7 +35,6 @@
   
   <script>
   import axios from 'axios'
-import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
   export default {
     name: 'PopupFormButton',
     data() {

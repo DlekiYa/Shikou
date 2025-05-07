@@ -38,7 +38,6 @@ class WorkspaceController(
             request.authorities != null) {
             authorities.addAll(request.authorities)
         }
-        
         return ResponseEntity.ok(StatusResponse(workspaceService.getWorkspace(request.id)))
     }
 }
