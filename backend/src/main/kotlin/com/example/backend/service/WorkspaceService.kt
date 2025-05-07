@@ -55,9 +55,6 @@ class WorkspaceService(
 ) {
     fun createWorkspace(username: String, name: String) {
         val new_workspace = Workspace(name, "");
-        var user : UserAccount? = userRepository.findByUsername(username)
-        var list : MutableList<UserAccount> = if (user != null) mutableListOf(user) else mutableListOf()
-        new_workspace.updateUsers(list)
 
         val savedWorkspace = workspaceRepository.save(new_workspace);
         val workspacePath = Paths.get("${documentConfiguration.workspaceRootDirectory.removeSuffix("/")}/${savedWorkspace.id}")
