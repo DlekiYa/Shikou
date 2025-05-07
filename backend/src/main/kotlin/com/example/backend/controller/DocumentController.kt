@@ -55,6 +55,13 @@ class DocumentController(
         return document
     }
 
+    @GetMapping("/path")
+    fun getDocument(@RequestBody @Valid request: GetDocumentRequest): ResponseEntity<Document> {
+        val documents = documentRepository.findDocumentsByPath(request.path)
+        val answer = documents.firstOrNull {it.id == request.workspaceId} ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok(answer)
+    }
+
     @GetMapping("/raw/{id}")
     fun getDocumentRaw(@PathVariable id: Long): ByteArray {
         val document = documentRepository.findById(id).getOrNull() ?: throw DocumentNotFoundException()
@@ -85,4 +92,10 @@ data class CreateDocumentRequest(
     val name: String,
     val workspaceId: Long = -1,
     val authorities: List<String>?
+)
+
+data class GetDocumentRequest(
+    @field:NotBlank
+    val path: String,
+    val workspaceId: Long = -1
 )
