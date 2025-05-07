@@ -1,4 +1,16 @@
 services:
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    environment:
+      POSTGRES_DB: shikoudb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgresdb
+    ports:
+      - "5432:5432"
+    networks:
+      - bd
+
   backend:
     build: 
       context: ./backend
@@ -6,12 +18,18 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shikoudb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgresdb
     volumes:
       - ./backend:/app
       - /app/build
     networks:
       - app-network
+      - bd
+    depends_on:
+      - postgres
 
   web:
     build:
@@ -29,4 +47,6 @@ services:
 
 networks: # TODO: don't forget to actually connect spring with vue, silly (for delik)
   app-network:
+    driver: bridge
+  bd:
     driver: bridge
